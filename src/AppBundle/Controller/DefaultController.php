@@ -41,7 +41,7 @@ class DefaultController extends Controller
     }
 
     /**
-     * @Route("/show", name="showProduct")
+     * @Route("/show/{id}", name="showProduct")
      */
     public function showAction($id)
     {
@@ -54,8 +54,49 @@ class DefaultController extends Controller
                 'No product found for id '.$id
             );
         }
+        return $this->render('product/show.html.twig',array("product" => $product));
 
         // ... do something, like pass the $product object into a template
+    }
+
+    /**
+     * @Route("/update/{id}", name="updateProduct")
+     */
+    public function updateAction($id)
+    {
+        $em = $this->getDoctrine()->getManager();
+        $product = $em->getRepository('AppBundle:Product')->find($id);
+
+        if (!$product) {
+            throw $this->createNotFoundException(
+                'No product found for id '.$id
+            );
+        }
+
+        $product->setName('New product name!');
+        $em->flush();
+
+        return $this->render('product/show.html.twig',array("product" => $product));
+    }
+
+    /**
+     * @Route("/delete/{id}", name="deleteProduct")
+     */
+    public function deleteAction($id)
+    {
+        $em = $this->getDoctrine()->getManager();
+        $product = $em->getRepository('AppBundle:Product')->find($id);
+
+        if (!$product) {
+            throw $this->createNotFoundException(
+                'No product found for id '.$id
+            );
+        }
+
+        $em->remove($product);
+        $em->flush();
+
+        return $this->redirectToRoute('homepage');
     }
 
 }
