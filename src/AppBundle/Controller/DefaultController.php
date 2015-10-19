@@ -7,6 +7,7 @@ use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use AppBundle\Entity\Product;
+use AppBundle\Entity\Task;
 
 class DefaultController extends Controller
 {
@@ -99,4 +100,28 @@ class DefaultController extends Controller
         return $this->redirectToRoute('homepage');
     }
 
+    /**
+     * @Route("/task/new")
+     */
+    public function newAction(Request $request)
+    {
+        // create a task and give it some dummy data for this example
+        $task = new Task();
+
+        $form = $this->createFormBuilder($task)
+            ->add('task', 'text')
+            ->add('dueDate', 'date')
+            ->add('save', 'submit', array('label' => 'Create Task'))
+            ->add('save_no_validate', 'submit', array('label' => 'Save No Validate','attr'=> array('formnovalidate'=>'formnovalidate')))
+            ->getForm();
+
+        $form->handleRequest($request);
+
+        if ($form->isValid()) {
+            return $this->redirectToRoute('task_success');
+        }
+        return $this->render('task/new.html.twig', array(
+            'form' => $form->createView(),
+        ));
+    }
 }
